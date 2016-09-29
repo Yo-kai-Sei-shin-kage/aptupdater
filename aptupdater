@@ -1,0 +1,250 @@
+#!/bin/bash
+clear
+
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+## APTUPDATER by Yokai Seishinkage                          ##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+## This tool is 100% free to use and modify as you see fit. ##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+
+
+## CHECK ROOT ##
+if [ "$(whoami)" != "root" ]; then
+   echo -e "\x1b[91mYOU MUST BE ROOT TO USE THIS!\x1b[0m"
+   exit 1
+fi
+
+## MAIN SCRIPT FUNCTION ##
+main() {
+clear
+
+## Check file existence and make new file(s) if none are found.
+function file_check() {
+
+    F_1="/usr/bin/updatelog/update_log.txt"
+    F_2="/usr/bin/updatelog/upgrade_log.txt"
+    F_3="/usr/bin/updatelog/dist-upgrade_log.txt"
+
+        if [ ! -e "$F_1" ]; then
+
+            echo -e "\x1b[91mNo previous update_logs detected.\x1b[0m"
+            echo -e "\x1b[93mMaking new update_log file.\x1b[0m"
+            touch "/usr/bin/updatelog/update_log.txt"
+
+                else
+                    echo -e "\x1b[93m[FILE FOUND]: $F_1\x1b[0m"
+        fi
+
+
+        if [ ! -e "$F_2" ]; then
+
+            echo -e "\x1b[91mNo previous upgrade_logs detected.\x1b[0m"
+            echo -e "\x1b[93mMaking new upgrade_log file.\x1b[0m"
+            touch "/usr/bin/updatelog/upgrade_log.txt"
+
+                else
+                    echo -e "\x1b[93m[FILE FOUND]: $F_2\x1b[0m"
+        fi
+
+
+        if [ ! -e "$F_3" ]; then
+
+            echo -e "\x1b[91mNo previous dist-upgrade_logs detected.\x1b[0m"
+            echo -e "\x1b[93mMaking new dist-upgrade_log file.\x1b[0m\n"
+            touch "/usr/bin/updatelog/dist-upgrade_log.txt"
+
+	        else
+	            echo -e "\x1b[93m[FILE FOUND]: $F_3\x1b[0m\n"
+        fi
+
+echo -e "\x1b[92mAll log files exist!\x1b[0m\n"
+read -p "press <enter> to continue"
+
+
+}
+
+## If logs exist, deletes the log files.
+function remove_log() {
+
+local FL_1="/usr/bin/updatelog/update_log.txt"
+local FL_2="/usr/bin/updatelog/upgrade_log.txt"
+local FL_3="/usr/bin/updatelog/dist-upgrade_log.txt"
+
+if [ ! -e "$FL_1" ]; then
+
+    echo -e "\x1b[91m[ERROR 404]:NOT FOUND: $FL_1\x1b[0m"
+
+       else
+       rm "$FL_1"
+       echo -e "\x1b[92m[FILE DELETED]: $FL_1\x1b[0m"
+fi
+
+if [ ! -e "$FL_2" ]; then
+
+    echo -e "\x1b[91m[ERROR 404]:NOT FOUND: $FL_2\x1b[0m"
+
+       else
+       rm "$FL_2"
+       echo -e "\x1b[92m[FILE DELETED]: $FL_2\x1b[0m"
+fi
+
+if [ ! -e "$FL_3" ]; then
+
+    echo -e "\x1b[91m[ERROR 404]:NOT FOUND: $FL_3\x1b[0m\n"
+    read -p "press <enter> to continue"
+    main
+
+       else
+       rm "$FL_3"
+       echo -e "\x1b[92m[FILE DELETED]: $FL_3\x1b[0m\n"
+       read -p "press <enter> to continue"
+       main
+fi
+
+}
+
+## If logs exists, reads last entry to detect how much time has passed
+## since last update/upgrades.
+function time_check() {
+
+the_time() {
+
+local LAST_1="$(tail -n 1 /usr/bin/updatelog/update_log.txt)"
+local LAST_2="$(tail -n 1 /usr/bin/updatelog/upgrade_log.txt)"
+local LAST_3="$(tail -n 1 /usr/bin/updatelog/dist-upgrade_log.txt)"
+
+if [ "$LAST_1" == "" ]; then
+
+   echo -e "\x1b[91mLog is empty! Run option 1, 2, or 3!\x1b[0m"
+
+       else
+
+          echo -e "\x1b[95mLast update was         : $LAST_1\x1b[0m"
+
+fi
+
+if [ "$LAST_2" == "" ]; then
+
+   echo -e "\x1b[91mLog is empty! Run option 1, 2, or 3!\x1b[0m"
+
+       else
+
+          echo -e "\x1b[95mLast upgrade was        : $LAST_2\x1b[0m"
+
+fi
+
+if [ "$LAST_3" == "" ]; then
+
+   echo -e "\x1b[91mLog is empty! Run option 1, 2, or 3!\x1b[0m\n"
+   read -p "press <enter> to continue"
+   main
+
+       else
+
+          echo -e "\x1b[95mLast dist-upgrade was   : $LAST_3\x1b[0m\n"
+          read -p "press <enter> to continue"
+          clear
+fi
+}
+
+FILE_1="/usr/bin/updatelog/update_log.txt"
+FILE_2="/usr/bin/updatelog/upgrade_log.txt"
+FILE_3="/usr/bin/updatelog/dist-upgrade_log.txt"
+
+if [ ! -e "$FILE_1" ]; then
+   echo -e "\x1b[91m No log file found! Run Check logs!\x1b[0m\n"
+   read -p "press <enter> to continue"
+   return 1
+   main
+fi
+
+    if [ ! -e "$FILE_2" ]; then
+       echo -e "\x1b[91m No log file found! Run Check logs!\x1b[0m\n"
+       read -p "press <enter> to continue"
+       return 1
+       main
+    fi
+
+	  if [ ! -e "$FILE_3" ]; then
+	     echo -e "\x1b[91m No log file found! Run Check logs!\x1b[0m\n"
+	     read -p "press <enter> to continue"
+             return 1
+	     main
+
+                 else
+                 the_time
+	  fi
+
+}
+
+
+
+## Show current time and date. ##
+echo -e "\n" && date && echo -e "\n"
+
+## Main script menu. ##
+echo -e "\x1b[95m
+  #~~~~~~~~~~~~~~~~~~#
+  # 1.) Update       #
+  # 2.) Upgrade      #
+  # 3.) Dist-upgrade #
+  # 4.) Check logs   #
+  # 5.) Check time   #
+  # 6.) Delete logs  #
+  # 7.) Quit         #
+  #~~~~~~~~~~~~~~~~~~#
+\x1b[0m\n"
+
+read -p "What would you like to do?: " CHOICE
+clear
+
+if [ "$CHOICE" == "1" ]; then
+
+    echo -e "\x1b[94mUPDATING NOW!\x1b[0m\n"
+    echo "$(date)" >> /usr/bin/updatelog/update_log.txt
+    apt-get update && wait
+    echo -e "\x1b[91mUPDATE COMPLETED!\x1b[0m\n"
+
+    elif [ "$CHOICE" == "2" ]; then
+
+        echo -e "\x1b[94mUPGRADING NOW!\x1b[0m\n"
+        echo "$(date)" >> /usr/bin/updatelog/upgrade_log.txt
+        apt-get upgrade && wait
+        echo -e "\x1b[91mUPGRADE COMPLETED!\x1b[0m\n"
+
+        elif [ "$CHOICE" == "3" ]; then
+
+            echo -e "\x1b[94mUPGRADING DIST NOW!\x1b[0m\n"
+            echo "$(date)" >> /usr/bin/updatelog/dist-upgrade_log.txt
+            apt-get dist-upgrade && wait
+            echo -e "\x1b[91mDIST-UPGRADE COMPLETED!\x1b[0m\n"
+
+            elif [ "$CHOICE" == "4" ]; then
+
+                 file_check
+
+		elif [ "$CHOICE" == "5" ]; then
+
+                     time_check
+
+	             elif [ "$CHOICE" == "6" ]; then
+
+                          remove_log
+
+		       	 elif [ "$CHOICE" == "7" ]; then
+
+                              clear
+                              exit 0
+
+       	             else
+	             echo -e "\x1b[91mIncorrect entry!\x1b[0m\n" && sleep 2
+	             main
+fi
+
+}
+
+## MAIN SCRIPT LOOP. ##
+while true
+do
+main
+done
