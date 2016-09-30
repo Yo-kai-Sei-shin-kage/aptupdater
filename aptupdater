@@ -9,10 +9,17 @@ clear
 
 
 ## CHECK ROOT ##
-if [ "$(whoami)" != "root" ]; then
+if [ "$UID" -ne "0" ]; then
    echo -e "\x1b[91mYOU MUST BE ROOT TO USE THIS!\x1b[0m"
    exit 1
 fi
+
+## Define colors
+Green=$'\e[0;32m';
+Yellow=$'\e[0;33m';
+Magenta=$'\x1b[95m';
+Red=$'\e[0;31m';
+ColorOff=$'\e[0m';
 
 ## MAIN SCRIPT FUNCTION ##
 main() {
@@ -177,69 +184,51 @@ fi
 
 }
 
-
-
-## Show current time and date. ##
-echo -e "\n" && date && echo -e "\n"
-
 ## Main script menu. ##
-echo -e "\x1b[95m
-  #~~~~~~~~~~~~~~~~~~#
-  # 1.) Update       #
-  # 2.) Upgrade      #
-  # 3.) Dist-upgrade #
-  # 4.) Check logs   #
-  # 5.) Check time   #
-  # 6.) Delete logs  #
-  # 7.) Quit         #
-  #~~~~~~~~~~~~~~~~~~#
-\x1b[0m\n"
+echo -e "\n${Green}  $(date)\n  $(uptime -p)\n${Yellow}
+  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#
+  # ${Green}1.${Yellow}) ${Magenta}Update       ${Yellow}#
+  # ${Green}2.${Yellow}) ${Magenta}Upgrade      ${Yellow}#
+  # ${Green}3.${Yellow}) ${Magenta}Dist-upgrade ${Yellow}#
+  # ${Green}4.${Yellow}) ${Magenta}Check logs   ${Yellow}#
+  # ${Green}5.${Yellow}) ${Magenta}Check time   ${Yellow}#
+  # ${Green}6.${Yellow}) ${Magenta}Delete logs  ${Yellow}#
+  # ${Green}7.${Yellow}) ${Magenta}Quit         ${Yellow}#
+  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#
+${ColorOff}"
 
 read -p "What would you like to do?: " CHOICE
 clear
 
-if [ "$CHOICE" == "1" ]; then
-
-    echo -e "\x1b[94mUPDATING NOW!\x1b[0m\n"
-    echo "$(date)" >> /usr/bin/updatelog/update_log.txt
-    apt-get update && wait
-    echo -e "\x1b[91mUPDATE COMPLETED!\x1b[0m\n"
-
-    elif [ "$CHOICE" == "2" ]; then
-
-        echo -e "\x1b[94mUPGRADING NOW!\x1b[0m\n"
-        echo "$(date)" >> /usr/bin/updatelog/upgrade_log.txt
-        apt-get upgrade && wait
-        echo -e "\x1b[91mUPGRADE COMPLETED!\x1b[0m\n"
-
-        elif [ "$CHOICE" == "3" ]; then
-
-            echo -e "\x1b[94mUPGRADING DIST NOW!\x1b[0m\n"
-            echo "$(date)" >> /usr/bin/updatelog/dist-upgrade_log.txt
-            apt-get dist-upgrade && wait
-            echo -e "\x1b[91mDIST-UPGRADE COMPLETED!\x1b[0m\n"
-
-            elif [ "$CHOICE" == "4" ]; then
-
-                 file_check
-
-		elif [ "$CHOICE" == "5" ]; then
-
-                     time_check
-
-	             elif [ "$CHOICE" == "6" ]; then
-
-                          remove_log
-
-		       	 elif [ "$CHOICE" == "7" ]; then
-
-                              clear
-                              exit 0
-
-       	             else
-	             echo -e "\x1b[91mIncorrect entry!\x1b[0m\n" && sleep 2
-	             main
-fi
+case "$CHOICE" in
+    1)    echo -e "\x1b[94mUPDATING NOW!\x1b[0m\n"
+          echo "$(date)" >> /usr/bin/updatelog/update_log.txt
+          apt-get update && wait
+          echo -e "\x1b[91mUPDATE COMPLETED!\x1b[0m\n"
+    ;;
+    2)    echo -e "\x1b[94mUPGRADING NOW!\x1b[0m\n"
+          echo "$(date)" >> /usr/bin/updatelog/upgrade_log.txt
+          apt-get upgrade && wait
+          echo -e "\x1b[91mUPGRADE COMPLETED!\x1b[0m\n"
+    ;;
+    3)    echo -e "\x1b[94mUPGRADING DIST NOW!\x1b[0m\n"
+          echo "$(date)" >> /usr/bin/updatelog/dist-upgrade_log.txt
+          apt-get dist-upgrade && wait
+          echo -e "\x1b[91mDIST-UPGRADE COMPLETED!\x1b[0m\n"
+    ;;
+    4)    file_check
+    ;;
+    5)    time_check
+    ;;
+    6)    remove_log
+    ;;
+    7)    clear
+          exit 0
+    ;;
+    *)    echo -e "\x1b[91mIncorrect entry!\x1b[0m\n" && sleep 2
+	  main
+    ;;
+esac
 
 }
 
