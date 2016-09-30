@@ -125,7 +125,7 @@ local LAST_3="$(tail -n 1 /usr/bin/updatelog/dist-upgrade_log.txt)"
 
 if [ "$LAST_1" == "" ]; then
 
-   echo -e "\x1b[91mLog is empty! Run option 1, 2, or 3!\x1b[0m"
+   echo -e "\x1b[91mUpdate log is empty! Run option 1!\x1b[0m"
 
        else
 
@@ -135,7 +135,7 @@ fi
 
 if [ "$LAST_2" == "" ]; then
 
-   echo -e "\x1b[91mLog is empty! Run option 1, 2, or 3!\x1b[0m"
+   echo -e "\x1b[91mUpgrade log is empty! Run option 2!\x1b[0m"
 
        else
 
@@ -145,7 +145,7 @@ fi
 
 if [ "$LAST_3" == "" ]; then
 
-   echo -e "\x1b[91mLog is empty! Run option 1, 2, or 3!\x1b[0m\n"
+   echo -e "\x1b[91mDist-upgrade log is empty! Run option 3!\x1b[0m\n"
    read -p "press <enter> to continue"
    main
 
