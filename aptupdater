@@ -11,12 +11,6 @@ clear
 ## 1.) deadhead420                                          ##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
-## CHECK ROOT ##
-if [ "$UID" -ne "0" ]; then
-   echo -e "\x1b[91mYOU MUST BE ROOT TO USE THIS!\x1b[0m"
-   exit 1
-fi
-
 ## Define colors
 Green=$'\e[0;32m';
 Yellow=$'\e[0;33m';
@@ -24,200 +18,158 @@ Magenta=$'\x1b[95m';
 Red=$'\e[0;31m';
 ColorOff=$'\e[0m';
 
+## Define logs
+D_0="/var/lib/aptupdater"
+F_1="$D_0/update_log.txt"
+F_2="$D_0/upgrade_log.txt"
+F_3="$D_0/dist-upgrade_log.txt"
+
+## CHECK ROOT (fix path to include lolcat)
+if [ "$UID" -ne "0" ]; then
+   echo -e "\n${Red} Error: ${Yellow}YOU MUST BE ROOT TO USE THIS!"
+   echo -e " Tip: ${Magenta}Precede your command with 'sudo'${ColorOff}\n"
+   exit 1
+else
+	PATH="${PATH}:/usr/games"
+	if (which lolcat &> /dev/null) then
+		LOL=true
+	else
+		LOL=false
+	fi
+fi
+
+## Check if log directory exists, if not create it
+if [ ! -d "$D_0" ]; then		
+	echo -e "${Red}Error: ${Yellow}No log directory detected."
+	echo -e "${Magenta}Making new log directory."
+	mkdir /var/lib/aptupdater
+fi
+
 ## MAIN SCRIPT FUNCTION ##
 main() {
 clear
 
 ## Check file existence and make new file(s) if none are found.
 function file_check() {
-
-    F_1="/usr/bin/updatelog/update_log.txt"
-    F_2="/usr/bin/updatelog/upgrade_log.txt"
-    F_3="/usr/bin/updatelog/dist-upgrade_log.txt"
-
-        if [ ! -e "$F_1" ]; then
-
-            echo -e "\x1b[91mNo previous update_logs detected.\x1b[0m"
-            echo -e "\x1b[93mMaking new update_log file.\x1b[0m"
-            touch "/usr/bin/updatelog/update_log.txt"
-
-                else
-                    echo -e "\x1b[93m[FILE FOUND]: $F_1\x1b[0m"
-        fi
-
-
-        if [ ! -e "$F_2" ]; then
-
-            echo -e "\x1b[91mNo previous upgrade_logs detected.\x1b[0m"
-            echo -e "\x1b[93mMaking new upgrade_log file.\x1b[0m"
-            touch "/usr/bin/updatelog/upgrade_log.txt"
-
-                else
-                    echo -e "\x1b[93m[FILE FOUND]: $F_2\x1b[0m"
-        fi
-
-
-        if [ ! -e "$F_3" ]; then
-
-            echo -e "\x1b[91mNo previous dist-upgrade_logs detected.\x1b[0m"
-            echo -e "\x1b[93mMaking new dist-upgrade_log file.\x1b[0m\n"
-            touch "/usr/bin/updatelog/dist-upgrade_log.txt"
-
-	        else
-	            echo -e "\x1b[93m[FILE FOUND]: $F_3\x1b[0m\n"
-        fi
-
-echo -e "\x1b[92mAll log files exist!\x1b[0m\n"
-read -p "press <enter> to continue"
-
-
-}
-
-## If logs exist, deletes the log files.
-function remove_log() {
-
-local FL_1="/usr/bin/updatelog/update_log.txt"
-local FL_2="/usr/bin/updatelog/upgrade_log.txt"
-local FL_3="/usr/bin/updatelog/dist-upgrade_log.txt"
-
-if [ ! -e "$FL_1" ]; then
-
-    echo -e "\x1b[91m[ERROR 404]:NOT FOUND: $FL_1\x1b[0m"
-
-       else
-       rm "$FL_1"
-       echo -e "\x1b[92m[FILE DELETED]: $FL_1\x1b[0m"
-fi
-
-if [ ! -e "$FL_2" ]; then
-
-    echo -e "\x1b[91m[ERROR 404]:NOT FOUND: $FL_2\x1b[0m"
-
-       else
-       rm "$FL_2"
-       echo -e "\x1b[92m[FILE DELETED]: $FL_2\x1b[0m"
-fi
-
-if [ ! -e "$FL_3" ]; then
-
-    echo -e "\x1b[91m[ERROR 404]:NOT FOUND: $FL_3\x1b[0m\n"
-    read -p "press <enter> to continue"
-    main
-
-       else
-       rm "$FL_3"
-       echo -e "\x1b[92m[FILE DELETED]: $FL_3\x1b[0m\n"
-       read -p "press <enter> to continue"
-       main
-fi
-
-}
-
-## If logs exists, reads last entry to detect how much time has passed
-## since last update/upgrades.
-function time_check() {
-
-the_time() {
-
-local LAST_1="$(tail -n 1 /usr/bin/updatelog/update_log.txt)"
-local LAST_2="$(tail -n 1 /usr/bin/updatelog/upgrade_log.txt)"
-local LAST_3="$(tail -n 1 /usr/bin/updatelog/dist-upgrade_log.txt)"
-
-if [ "$LAST_1" == "" ]; then
-
-   echo -e "\x1b[91mUpdate log is empty! Run option 1!\x1b[0m"
-
-       else
-
-          echo -e "\x1b[95mLast update was         : $LAST_1\x1b[0m"
-
-fi
-
-if [ "$LAST_2" == "" ]; then
-
-   echo -e "\x1b[91mUpgrade log is empty! Run option 2!\x1b[0m"
-
-       else
-
-          echo -e "\x1b[95mLast upgrade was        : $LAST_2\x1b[0m"
-
-fi
-
-if [ "$LAST_3" == "" ]; then
-
-   echo -e "\x1b[91mDist-upgrade log is empty! Run option 3!\x1b[0m\n"
-   read -p "press <enter> to continue"
-   main
-
-       else
-
-          echo -e "\x1b[95mLast dist-upgrade was   : $LAST_3\x1b[0m\n"
-          read -p "press <enter> to continue"
-          clear
-fi
-}
-
-FILE_1="/usr/bin/updatelog/update_log.txt"
-FILE_2="/usr/bin/updatelog/upgrade_log.txt"
-FILE_3="/usr/bin/updatelog/dist-upgrade_log.txt"
-
-if [ ! -e "$FILE_1" ]; then
-   echo -e "\x1b[91m No log file found! Run Check logs!\x1b[0m\n"
-   read -p "press <enter> to continue"
-   return 1
-   main
-fi
-
-    if [ ! -e "$FILE_2" ]; then
-       echo -e "\x1b[91m No log file found! Run Check logs!\x1b[0m\n"
-       read -p "press <enter> to continue"
-       return 1
-       main
+	
+	echo
+        
+    if [ ! -e "$F_1" ]; then
+    	echo -e "${Red} Error: ${Yellow}No previous update_logs detected."
+    	echo -e "${Magenta} Making new update_log file."
+        touch "$F_1"
+	else
+        echo -e "${Green} [FILE FOUND]: $F_1"
     fi
 
-	  if [ ! -e "$FILE_3" ]; then
-	     echo -e "\x1b[91m No log file found! Run Check logs!\x1b[0m\n"
-	     read -p "press <enter> to continue"
-             return 1
-	     main
+    if [ ! -e "$F_2" ]; then
+    	echo -e "${Red} Error: ${Yellow}No previous upgrade_logs detected."
+        echo -e "${Magenta} Making new upgrade_log file."
+        touch "$F_2"
+    else
+    	echo -e "${Green} [FILE FOUND]: $F_2"
+    fi
 
-                 else
-                 the_time
-	  fi
+    if [ ! -e "$F_3" ]; then
+        echo -e "${Red} Error: No ${Yellow}previous dist-upgrade_logs detected."
+        echo -e "${Magenta} Making new dist-upgrade_log file.\n"
+        touch "$F_3"
+	else
+	    echo -e "${Green} [FILE FOUND]: $F_3\n"
+    fi
+
+	echo -e "${Green} All log files exist!\n"
+	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
+
+}
+
+## Deletes the log files.
+function remove_log() {
+
+	echo
+	rm "$F_1" "$F_2" "$F_3"
+	echo -e "${Yellow} All log files have been removed from the system\n"
+	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
+
+}
+
+time_check() {
+
+	LAST_1="$(tail -n 1 $F_1)"
+	LAST_2="$(tail -n 1 $F_2)"
+	LAST_3="$(tail -n 1 $F_3)"
+	echo
+
+	if [ -z "$LAST_1" ]; then
+   		echo -e "${Red} Error: ${Yellow}Update log is empty! Run option 1!"
+    else
+        echo -e "${Magenta} Last update was: ${Green}$LAST_1"
+	fi
+
+	if [ -z "$LAST_2" ]; then
+   		echo -e "${Red} Error: ${Yellow}Upgrade log is empty! Run option 2!"
+    else
+    	echo -e "${Magenta} Last upgrade was: ${Green}$LAST_2"
+	fi
+
+	if [ -z "$LAST_3" ]; then
+  		echo -e "${Red} Error: ${Yellow}Dist-upgrade log is empty! Run option 3!\n"
+    else
+    	echo -e "${Magenta} Last dist-upgrade was: ${Green}${LAST_3}\n"
+	fi
+
+	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
 
 }
 
 ## Main script menu. ##
-echo -e "\n${Green}  $(date)\n  $(uptime -p)\n${Yellow}
-  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#
-  # ${Green}1.${Yellow}) ${Magenta}Update       ${Yellow}#
-  # ${Green}2.${Yellow}) ${Magenta}Upgrade      ${Yellow}#
-  # ${Green}3.${Yellow}) ${Magenta}Dist-upgrade ${Yellow}#
-  # ${Green}4.${Yellow}) ${Magenta}Check logs   ${Yellow}#
-  # ${Green}5.${Yellow}) ${Magenta}Check time   ${Yellow}#
-  # ${Green}6.${Yellow}) ${Magenta}Delete logs  ${Yellow}#
-  # ${Green}7.${Yellow}) ${Magenta}Quit         ${Yellow}#
-  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#
-${ColorOff}"
+echo -e "\n${Magenta}*${Green} ${USER}${Magenta}@${Green}${HOSTNAME}:${Magenta}# ${Green}$(uname -o) $(uname -p)
+${Magenta}* CPU:${Green} $(lscpu | grep "Model name:" | cut -c24-)
+${Magenta}* RAM:${Green} $(free -m | grep "Mem:" | awk '{print $3" MiB / "$2" MiB"}')
+${Magenta}*${Green} $(date)${Magenta}\n*${Green} $(uptime -p)${Yellow}\n
+|${Green}------------------------${Yellow}|
+|  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#  |
+|  # ${Green}1.${Yellow}) ${Magenta}Update       ${Yellow}#  |
+|  # ${Green}2.${Yellow}) ${Magenta}Upgrade      ${Yellow}#  |
+|  # ${Green}3.${Yellow}) ${Magenta}Dist-upgrade ${Yellow}#  |
+|  # ${Green}4.${Yellow}) ${Magenta}Check logs   ${Yellow}#  |
+|  # ${Green}5.${Yellow}) ${Magenta}Check time   ${Yellow}#  |
+|  # ${Green}6.${Yellow}) ${Magenta}Delete logs  ${Yellow}#  |
+|  # ${Green}7.${Yellow}) ${Magenta}Quit         ${Yellow}#  |
+|  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#  |
+|${Green}------------------------${Yellow}|\n"
 
-read -p "What would you like to do?: " CHOICE
+echo -en "${Magenta}\e[4mWhat would you like to do?\e[0m [${Green}1-7${Magenta}]: ${ColorOff}"
+read CHOICE
 clear
 
 case "$CHOICE" in
-    1)    echo -e "\x1b[94mUPDATING NOW!\x1b[0m\n"
-          echo "$(date)" >> /usr/bin/updatelog/update_log.txt
-          apt-get update && wait
-          echo -e "\x1b[91mUPDATE COMPLETED!\x1b[0m\n"
+    1)    echo -e "${Magenta}UPDATING NOW!${ColorOff}"
+          echo "$(date)" >> "$F_1"
+          if "$LOL" ; then
+          	apt-get update | lolcat
+          else
+			apt-get update
+          fi
+          echo -e "${Green}UPDATE COMPLETED!${ColorOff}\n"
     ;;
-    2)    echo -e "\x1b[94mUPGRADING NOW!\x1b[0m\n"
-          echo "$(date)" >> /usr/bin/updatelog/upgrade_log.txt
-          apt-get upgrade && wait
-          echo -e "\x1b[91mUPGRADE COMPLETED!\x1b[0m\n"
+    2)    echo -e "${Magenta}UPGRADING NOW!${ColorOff}\n"
+          echo "$(date)" >> "$F_2"
+          if "$LOL" ; then
+          	apt-get upgrade | lolcat
+          else
+			apt-get upgrade
+          fi
+          echo -e "${Green}UPGRADE COMPLETED!${ColorOff}\n"
     ;;
-    3)    echo -e "\x1b[94mUPGRADING DIST NOW!\x1b[0m\n"
-          echo "$(date)" >> /usr/bin/updatelog/dist-upgrade_log.txt
-          apt-get dist-upgrade && wait
-          echo -e "\x1b[91mDIST-UPGRADE COMPLETED!\x1b[0m\n"
+    3)    echo -e "${Magenta}UPGRADING DIST NOW!${ColorOff}\n"
+          echo "$(date)" >> "$F_3"
+          if "$LOL" ; then
+          	apt-get dist-upgrade | lolcat
+          else
+			apt-get dist-upgrade
+          fi
+          echo -e "${Green}DIST-UPGRADE COMPLETED!${ColorOff}\n"
     ;;
     4)    file_check
     ;;
@@ -228,8 +180,8 @@ case "$CHOICE" in
     7)    clear
           exit 0
     ;;
-    *)    echo -e "\x1b[91mIncorrect entry!\x1b[0m\n" && sleep 2
-	  main
+    *)    echo -e "\n${Red} Error: ${Yellow}Incorrect entry!\n"
+    	  read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
     ;;
 esac
 
