@@ -7,19 +7,17 @@ requires that you be root in order to execute. Aptupdater will keep a date and t
 your dist-upgrades in a log file created specifically for aptupdater. Aptupdater is a user-interactive tool and it will keep 
 your update records as long as you wish to have them. 
 
-# INSTALLATION
+# AUTOMATIC INSTALLATION
 # Step 1
-1.) cd /usr/bin/
+1.) sudo bash <(curl -s https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/install.sh)
+
+# MANUAL INSTALLATION
+# Step 1
+1.) sudo wget -O /usr/bin/aptupdater https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
 # Step 2
-2.) git clone https://github.com/Yo-kai-Sei-shin-kage/aptupdater.git
+2.) sudo mkdir /var/lib/aptupdater
 # Step 3
-3.) Move or copy aptupdater executable from aptupdater folder to /usr/bin/ directory.
-# Step 4
-4.) mkdir updatelog
-# Step 5
-5.) chown root aptupdater
-# Step 6
-6.) chmod +x aptupdater
+3.) sudo chmod +x /usr/bin/aptupdater
 
 # USAGE
 Terminal commands: "aptupdater", Read menu and make a choice. Pretty simple really.
