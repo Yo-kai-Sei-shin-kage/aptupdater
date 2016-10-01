@@ -11,50 +11,88 @@ clear
 ## 1.) deadhead420                                          ##
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
 
-## Define colors
-Green=$'\e[0;32m';
-Yellow=$'\e[0;33m';
-Magenta=$'\x1b[95m';
-Red=$'\e[0;31m';
-ColorOff=$'\e[0m';
+## DISPLAY USAGE MESSAGE
+usage() {
+	
+	echo -e "\n${Megenta} Usage:${Green} $this${Yellow} [options]\n"
+	echo -e "	${Magenta}Default usage displays interactive apt menu\n"
+	echo "${Magenta} Options:"
+	echo "	${Green}-h|--help	${Yellow}- displays this usage message"
+	echo -e "	${Green}-u|--update	${Yellow}- updates $this\n"
+	echo "${Magenta} Examples:"
+	echo "${Green}	$this"
+	echo "	$this ${Yellow}-u"
+	echo -e "${Green}	$this ${Yellow}--help\n"
+	exit 0
 
-## Define logs
-D_0="/var/lib/aptupdater"
-F_1="$D_0/update_log.txt"
-F_2="$D_0/upgrade_log.txt"
-F_3="$D_0/dist-upgrade_log.txt"
+}
 
-## CHECK ROOT (fix path to include lolcat)
-if [ "$UID" -ne "0" ]; then
-   echo -e "\n${Red} Error: ${Yellow}YOU MUST BE ROOT TO USE THIS!"
-   echo -e " Tip: ${Magenta}Precede your command with 'sudo'${ColorOff}\n"
-   exit 1
-fi
+update() {
+	
+	echo -e "\n${Magenta}Updating ${this}...\n"
+	wget -O /usr/bin/${this} https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
+	chmod +x /usr/bin/${this}
+	echo -e "\n${Green}[${this}] successfully updated!\n"
+	exit 0
 
-PATH="${PATH}:/usr/games"
-if (which lolcat &> /dev/null) then
-	LOL=true
-else
-	LOL=false
-fi
+}
 
-## Check if log directory exists, if not create it
-if [ ! -d "$D_0" ]; then		
-	echo -e "${Red}Error: ${Yellow}No log directory detected."
-	echo -e "${Magenta}Making new log directory."
-	mkdir /var/lib/aptupdater
-fi
+## CONFIGURE
+conf() {
 
-## Get opts
-case "$1" in
-	-u|--update)
-		echo -e "\n${Magenta}Updating aptupdater..."
-		wget -O /usr/bin/aptupdater https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
-		chmod +x /usr/bin/aptupdater
-		echo -e "\n${Green}Aptupdater successfully updated!"
-		exit
-	;;
-esac
+	## Define colors
+	Green=$'\e[0;32m';
+	Yellow=$'\e[0;33m';
+	Magenta=$'\x1b[95m';
+	Red=$'\e[0;31m';
+	ColorOff=$'\e[0m';
+
+	## Define this & distro
+	this=${0##*/}
+	distro=$(cat /etc/lsb-release | grep "DISTRIB_ID" | cut -c12-)
+	
+	## Define logs
+	D_0="/var/lib/${this}"
+	F_1="$D_0/update_log.txt"
+	F_2="$D_0/upgrade_log.txt"
+	F_3="$D_0/dist-upgrade_log.txt"
+
+	## USAGE MESSAGE (doesn't need root or sudo)
+	case "$1" in
+		-h|--help) usage
+		;;
+	esac
+	
+	## CHECK ROOT (fix path to include lolcat)
+	if [ "$UID" -ne "0" ]; then
+	   echo -e "\n${Red} [${this}] Error: ${Yellow}YOU MUST BE ROOT TO USE THIS!"
+	   echo -e " Tip: ${Magenta}Precede your command with 'sudo'${ColorOff}\n"
+	   exit 1
+	fi
+
+	PATH="${PATH}:/usr/games"
+	if (which lolcat &> /dev/null) then
+		LOL=true
+	else
+		LOL=false
+	fi
+
+	## UPDATE (needs root or sudo)
+	case "$1" in
+		-u|--update) update
+		;;
+	esac
+
+	## Check if log directory exists, if not create it
+	if [ ! -d "$D_0" ]; then		
+		echo -e "${Red}Error: ${Yellow}No log directory detected!"
+		echo -e "${Magenta}Making new log directory."
+		mkdir /var/lib/${this}
+		echo -e "\n${Green}Log directory created!\n"
+		read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"	
+	fi
+
+}
 
 ## MAIN SCRIPT FUNCTION ##
 main() {
@@ -89,7 +127,7 @@ function file_check() {
 	    echo -e "${Green} [FILE FOUND]: $F_3\n"
     fi
 
-	echo -e "${Green} All log files exist!\n"
+	echo -e "\n${Green} All log files exist!\n"
 	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
 
 }
@@ -134,7 +172,7 @@ time_check() {
 }
 
 ## Main script menu. ##
-echo -e "\n${Magenta}*${Green} ${USER}${Magenta}@${Green}${HOSTNAME}:${Magenta}# ${Green}$(uname -o) $(uname -p)
+echo -e "\n${Magenta}*${Green} ${USER}${Magenta}@${Green}${HOSTNAME}:${Magenta}# ${Green}${distro} $(uname -o) $(uname -p)
 ${Magenta}* CPU:${Green} $(lscpu | grep "Model name:" | cut -c24-)
 ${Magenta}* RAM:${Green} $(free -m | grep "Mem:" | awk '{print $3" MiB / "$2" MiB"}')
 ${Magenta}*${Green} $(date)${Magenta}\n*${Green} $(uptime -p)${Yellow}\n
@@ -163,6 +201,7 @@ case "$CHOICE" in
 			apt-get update
           fi
           echo -e "${Green}UPDATE COMPLETED!${ColorOff}\n"
+          read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
     ;;
     2)    echo -e "${Magenta}UPGRADING NOW!${ColorOff}\n"
           echo "$(date)" >> "$F_2"
@@ -171,7 +210,8 @@ case "$CHOICE" in
           else
 			apt-get upgrade
           fi
-          echo -e "${Green}UPGRADE COMPLETED!${ColorOff}\n"
+          echo -e "\n${Green}UPGRADE COMPLETED!${ColorOff}\n"
+          read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
     ;;
     3)    echo -e "${Magenta}UPGRADING DIST NOW!${ColorOff}\n"
           echo "$(date)" >> "$F_3"
@@ -180,7 +220,8 @@ case "$CHOICE" in
           else
 			apt-get dist-upgrade
           fi
-          echo -e "${Green}DIST-UPGRADE COMPLETED!${ColorOff}\n"
+          echo -e "\n${Green}DIST-UPGRADE COMPLETED!${ColorOff}\n"
+          read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
     ;;
     4)    file_check
     ;;
@@ -199,6 +240,7 @@ esac
 }
 
 ## MAIN SCRIPT LOOP. ##
+conf "$@"
 while true
 do
 main
