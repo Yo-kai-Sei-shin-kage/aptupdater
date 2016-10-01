@@ -29,13 +29,13 @@ if [ "$UID" -ne "0" ]; then
    echo -e "\n${Red} Error: ${Yellow}YOU MUST BE ROOT TO USE THIS!"
    echo -e " Tip: ${Magenta}Precede your command with 'sudo'${ColorOff}\n"
    exit 1
+fi
+
+PATH="${PATH}:/usr/games"
+if (which lolcat &> /dev/null) then
+	LOL=true
 else
-	PATH="${PATH}:/usr/games"
-	if (which lolcat &> /dev/null) then
-		LOL=true
-	else
-		LOL=false
-	fi
+	LOL=false
 fi
 
 ## Check if log directory exists, if not create it
@@ -44,6 +44,17 @@ if [ ! -d "$D_0" ]; then
 	echo -e "${Magenta}Making new log directory."
 	mkdir /var/lib/aptupdater
 fi
+
+## Get opts
+case "$1" in
+	-u|--update)
+		echo -e "\n${Magenta}Updating aptupdater..."
+		wget -O /usr/bin/aptupdater https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
+		chmod +x /usr/bin/aptupdater
+		echo -e "\n${Green}Aptupdater successfully updated!"
+		exit
+	;;
+esac
 
 ## MAIN SCRIPT FUNCTION ##
 main() {
