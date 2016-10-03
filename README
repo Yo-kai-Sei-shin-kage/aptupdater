@@ -20,8 +20,8 @@ your update records as long as you wish to have them.
 3.) sudo chmod +x /usr/bin/aptupdater
 
 # USAGE
-Terminal commands: "aptup", Read menu and make a choice. Pretty simple really.
-Example: (root@yokai:~# aptup)
+Terminal commands: "aptupdater", Read menu and make a choice. Pretty simple really.
+Example: (root@yokai:~# aptupdater)
 
 # SUGGESTIONS
 
