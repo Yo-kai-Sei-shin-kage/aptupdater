@@ -10,7 +10,7 @@ fi
 
 ## Fetch latest script from github & make executable
 wget -O /usr/bin/aptupdater https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
-chmod +x /usr/bin/aptup
+chmod +x /usr/bin/aptupdater
 
 ## Create logs directory
 mkdir /var/lib/aptupdater
