@@ -155,7 +155,7 @@ if [ ! -e "$F_3" ]; then
     else
 	echo
 	rm "$F_1" "$F_2" "$F_3"
-	echo -e "${Yellow} All log files have been removed from the system\n"
+	echo -e "${Yellow} All aptup log files have been removed from the system\n"
 	read -p "${Magenta}Press ${Green}<enter>${Magenta}to continue${ColorOff}"
 fi
 
