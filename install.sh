@@ -1,5 +1,5 @@
 #!/bin/bash
-## Aptupdater installer
+## Aptup installer
 
 ## CHECK ROOT (fix path to include lolcat)
 if [ "$UID" -ne "0" ]; then
