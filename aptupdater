@@ -13,7 +13,7 @@ clear
 
 ## DISPLAY USAGE MESSAGE
 usage() {
-	
+
 	echo -e "\n${Megenta} Usage:${Green} $this${Yellow} [options]\n"
 	echo -e "	${Magenta}Default usage displays interactive apt menu\n"
 	echo "${Magenta} Options:"
@@ -28,7 +28,7 @@ usage() {
 }
 
 update() {
-	
+
 	echo -e "\n${Magenta}Updating ${this}...\n"
 	wget -O /usr/bin/${this} https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
 	chmod +x /usr/bin/${this}
@@ -50,19 +50,19 @@ conf() {
 	## Define this & distro
 	this=${0##*/}
 	distro=$(cat /etc/lsb-release | grep "DISTRIB_ID" | cut -c12-)
-	
+
 	## Define logs
 	D_0="/var/lib/${this}"
-	F_1="$D_0/update_log.txt"
-	F_2="$D_0/upgrade_log.txt"
-	F_3="$D_0/dist-upgrade_log.txt"
+	F_1="/var/lib/${this}/update_log.txt"
+	F_2="/var/lib/${this}/upgrade_log.txt"
+	F_3="/var/lib/${this}/dist-upgrade_log.txt"
 
 	## USAGE MESSAGE (doesn't need root or sudo)
 	case "$1" in
 		-h|--help) usage
 		;;
 	esac
-	
+
 	## CHECK ROOT (fix path to include lolcat)
 	if [ "$UID" -ne "0" ]; then
 	   echo -e "\n${Red} [${this}] Error: ${Yellow}YOU MUST BE ROOT TO USE THIS!"
@@ -84,12 +84,12 @@ conf() {
 	esac
 
 	## Check if log directory exists, if not create it
-	if [ ! -d "$D_0" ]; then		
+	if [ ! -d "$D_0" ]; then
 		echo -e "${Red}Error: ${Yellow}No log directory detected!"
 		echo -e "${Magenta}Making new log directory."
 		mkdir /var/lib/${this}
 		echo -e "\n${Green}Log directory created!\n"
-		read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"	
+		read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
 	fi
 
 }
@@ -100,9 +100,9 @@ clear
 
 ## Check file existence and make new file(s) if none are found.
 function file_check() {
-	
+
 	echo
-        
+
     if [ ! -e "$F_1" ]; then
     	echo -e "${Red} Error: ${Yellow}No previous update_logs detected."
     	echo -e "${Magenta} Making new update_log file."
@@ -128,40 +128,69 @@ function file_check() {
     fi
 
 	echo -e "\n${Green} All log files exist!\n"
-	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
+#	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
 
 }
 
 ## Deletes the log files.
 function remove_log() {
 
+if [ ! -e "$F_1" ]; then
+
+	echo -e "${Red}[ERROR]${ColorOff}:${Yellow}$F_1 does not exist!${ColorOff}"
+
+fi
+
+if [ ! -e "$F_2" ]; then
+
+	echo -e "${Red}[ERROR]${ColorOff}:${Yellow}$F_2 does not exist!${ColorOff}"
+
+fi
+
+if [ ! -e "$F_3" ]; then
+
+	echo -e "${Red}[ERROR]${ColorOff}:${Yellow}$F_3 does not exist!${ColorOff}"
+        read -p "${Magenta}Press ${Green}<enter>${Magenta}to continue${ColorOff}"
+
+    else
 	echo
 	rm "$F_1" "$F_2" "$F_3"
 	echo -e "${Yellow} All log files have been removed from the system\n"
-	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
+	read -p "${Magenta}Press ${Green}<enter>${Magenta}to continue${ColorOff}"
+fi
 
 }
 
 time_check() {
 
-	LAST_1="$(tail -n 1 $F_1)"
-	LAST_2="$(tail -n 1 $F_2)"
-	LAST_3="$(tail -n 1 $F_3)"
-	echo
+sub_time() {
 
-	if [ -z "$LAST_1" ]; then
+    file_check
+
+}
+
+sub_time
+
+	LAST_1="$(cat $F_1 | tail -n 1)"
+	LAST_2="$(cat $F_2 | tail -n 1)"
+	LAST_3="$(cat $F_3 | tail -n 1)"
+
+	if [ ! -s "$F_1" ]; then
+
    		echo -e "${Red} Error: ${Yellow}Update log is empty! Run option 1!"
     else
         echo -e "${Magenta} Last update was: ${Green}$LAST_1"
 	fi
 
-	if [ -z "$LAST_2" ]; then
+	if [ ! -s "$F_2" ]; then
+
    		echo -e "${Red} Error: ${Yellow}Upgrade log is empty! Run option 2!"
     else
     	echo -e "${Magenta} Last upgrade was: ${Green}$LAST_2"
 	fi
 
-	if [ -z "$LAST_3" ]; then
+	if [ ! -s "$F_3" ]; then
+
   		echo -e "${Red} Error: ${Yellow}Dist-upgrade log is empty! Run option 3!\n"
     else
     	echo -e "${Magenta} Last dist-upgrade was: ${Green}${LAST_3}\n"
@@ -182,13 +211,12 @@ ${Magenta}*${Green} $(date)${Magenta}\n*${Green} $(uptime -p)${Yellow}\n
 |  # ${Green}2.${Yellow}) ${Magenta}Upgrade      ${Yellow}#  |
 |  # ${Green}3.${Yellow}) ${Magenta}Dist-upgrade ${Yellow}#  |
 |  # ${Green}4.${Yellow}) ${Magenta}Check logs   ${Yellow}#  |
-|  # ${Green}5.${Yellow}) ${Magenta}Check time   ${Yellow}#  |
-|  # ${Green}6.${Yellow}) ${Magenta}Delete logs  ${Yellow}#  |
-|  # ${Green}7.${Yellow}) ${Magenta}Quit         ${Yellow}#  |
+|  # ${Green}5.${Yellow}) ${Magenta}Delete logs  ${Yellow}#  |
+|  # ${Green}6.${Yellow}) ${Magenta}Quit         ${Yellow}#  |
 |  #${Red}~~~~~~~~~~~~~~~~~~${Yellow}#  |
 |${Green}------------------------${Yellow}|\n"
 
-echo -en "${Magenta}\e[4mWhat would you like to do?\e[0m [${Green}1-7${Magenta}]: ${ColorOff}"
+echo -en "${Magenta}\e[4mWhat would you like to do?\e[0m [${Green}1-6${Magenta}]: ${ColorOff}"
 read CHOICE
 clear
 
@@ -223,14 +251,11 @@ case "$CHOICE" in
           echo -e "\n${Green}DIST-UPGRADE COMPLETED!${ColorOff}\n"
           read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
     ;;
-    4)    file_check
+    4)    time_check
     ;;
-    5)    time_check
+    5)    remove_log
     ;;
-    6)    remove_log
-    ;;
-    7)    clear
-          exit 0
+    6)    clear && exit 0
     ;;
     *)    echo -e "\n${Red} Error: ${Yellow}Incorrect entry!\n"
     	  read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
