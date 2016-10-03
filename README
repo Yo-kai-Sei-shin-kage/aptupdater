@@ -15,9 +15,9 @@ your update records as long as you wish to have them.
 # Step 1
 1.) sudo wget -O /usr/bin/aptupdater https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
 # Step 2
-2.) sudo mkdir /var/lib/aptup
+2.) sudo mkdir /var/lib/aptupdater
 # Step 3
-3.) sudo chmod +x /usr/bin/aptup
+3.) sudo chmod +x /usr/bin/aptupdater
 
 # USAGE
 Terminal commands: "aptup", Read menu and make a choice. Pretty simple really.
