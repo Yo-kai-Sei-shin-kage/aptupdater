@@ -41,10 +41,10 @@ update() {
 conf() {
 
 	## Define colors
-	Green=$'\e[0;32m';
-	Yellow=$'\e[0;33m';
+	Green=$'\x1b[92m';
+	Yellow=$'\x1b[93m';
 	Magenta=$'\x1b[95m';
-	Red=$'\e[0;31m';
+	Red=$'\x1b[91m';
 	ColorOff=$'\e[0m';
 
 	## Define this & distro
@@ -108,7 +108,7 @@ function file_check() {
     	echo -e "${Magenta} Making new update_log file."
         touch "$F_1"
 	else
-        echo -e "${Green} [FILE FOUND]: $F_1"
+        echo -e "\x1b[92m[\x1b[0m${Red}FILE FOUND${ColorOff}\x1b[92m]\x1b[0m:${Green} $F_1"
     fi
 
     if [ ! -e "$F_2" ]; then
@@ -116,15 +116,15 @@ function file_check() {
         echo -e "${Magenta} Making new upgrade_log file."
         touch "$F_2"
     else
-    	echo -e "${Green} [FILE FOUND]: $F_2"
+    	echo -e "\x1b[92m[\x1b[0m${Red}FILE FOUND${ColorOff}\x1b[92m]\x1b[0m:${Green} $F_2"
     fi
 
     if [ ! -e "$F_3" ]; then
-        echo -e "${Red} Error: No ${Yellow}previous dist-upgrade_logs detected."
+        echo -e "${Red} Error: ${Yellow}No previous dist-upgrade_logs detected."
         echo -e "${Magenta} Making new dist-upgrade_log file.\n"
         touch "$F_3"
 	else
-	    echo -e "${Green} [FILE FOUND]: $F_3\n"
+	    echo -e "\x1b[92m[\x1b[0m${Red}FILE FOUND${ColorOff}\x1b[92m]\x1b[0m:${Green} $F_3\n"
     fi
 
 	echo -e "\n${Green} All log files exist!\n"
@@ -179,21 +179,21 @@ sub_time
 
    		echo -e "${Red} Error: ${Yellow}Update log is empty! Run option 1!"
     else
-        echo -e "${Magenta} Last update was: ${Green}$LAST_1"
+        echo -e "${Magenta} Last update was:             ${Green}$LAST_1"
 	fi
 
 	if [ ! -s "$F_2" ]; then
 
    		echo -e "${Red} Error: ${Yellow}Upgrade log is empty! Run option 2!"
     else
-    	echo -e "${Magenta} Last upgrade was: ${Green}$LAST_2"
+    	echo -e "${Magenta} Last upgrade was:            ${Green}$LAST_2"
 	fi
 
 	if [ ! -s "$F_3" ]; then
 
   		echo -e "${Red} Error: ${Yellow}Dist-upgrade log is empty! Run option 3!\n"
     else
-    	echo -e "${Magenta} Last dist-upgrade was: ${Green}${LAST_3}\n"
+    	echo -e "${Magenta} Last dist-upgrade was:       ${Green}${LAST_3}\n"
 	fi
 
 	read -p "${Magenta} Press ${Green}<enter> ${Magenta}to continue${ColorOff}"
@@ -270,3 +270,5 @@ while true
 do
 main
 done
+
+
