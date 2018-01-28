@@ -9,19 +9,19 @@ your update records as long as you wish to have them.
 
 # AUTOMATIC INSTALLATION
 # Step 1
-1.) sudo bash <(curl -s https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/install.sh)
+1.) sudo bash <(curl -s https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptup/master/install.sh)
 
 # MANUAL INSTALLATION
 # Step 1
-1.) sudo wget -O /usr/bin/aptupdater https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
+1.) sudo wget -O /usr/bin/aptup https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptup/master/aptup
 # Step 2
-2.) sudo mkdir /var/lib/aptupdater
+2.) sudo mkdir /var/lib/aptup
 # Step 3
-3.) sudo chmod +x /usr/bin/aptupdater
+3.) sudo chmod +x /usr/bin/aptup
 
 # USAGE
-Terminal commands: "aptupdater", Read menu and make a choice. Pretty simple really.
-Example: (root@yokai:~# aptupdater)
+Terminal commands: "aptup", Read menu and make a choice. Pretty simple really.
+Example: (root@localhost:~# aptup)
 
 # SUGGESTIONS
 
