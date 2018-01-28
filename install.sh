@@ -9,7 +9,7 @@ if [ "$UID" -ne "0" ]; then
 fi
 
 ## Fetch latest script from github & make executable
-wget -O /usr/bin/aptup https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptup/master/aptup
+wget -O /usr/bin/aptup https://raw.githubusercontent.com/Yo-kai-Sei-shin-kage/aptupdater/master/aptupdater
 chmod u+x /usr/bin/aptup
 
 ## Create logs directory
